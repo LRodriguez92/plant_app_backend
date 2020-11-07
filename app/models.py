@@ -14,6 +14,7 @@ class User(models.Model):
 class Plant(models.Model):
     user = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name='plants')
+    plant_image = models.TextField(null=True)
     scientific_name = models.CharField(max_length=100, null=True)
     nickname = models.CharField(max_length=100)
     location = models.CharField(max_length=100)
