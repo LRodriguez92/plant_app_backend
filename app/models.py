@@ -50,7 +50,7 @@ class Schedule(models.Model):
     mist_notification = models.BooleanField(default=True)
 
 
-class Plant_Image(models.Model):
+class PlantImage(models.Model):
     plant = models.ForeignKey(
         Plant, on_delete=models.CASCADE, related_name='images')
     image = models.TextField()
