@@ -2,6 +2,13 @@ from rest_framework import serializers
 from .models import User, Plant, PlantImage, Schedule
 
 
+class PlantImageSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = PlantImage
+        fields = '__all__'
+
+
 class ScheduleSerializer(serializers.ModelSerializer):
 
     class Meta:
@@ -16,6 +23,11 @@ class PlantSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     schedules = ScheduleSerializer(
+        many=True,
+        read_only=True
+    )
+
+    images = PlantImageSerializer(
         many=True,
         read_only=True
     )
