@@ -1,6 +1,9 @@
 from django.urls import path
-from .views import PlantView
+from rest_framework.urlpatterns import format_suffix_patterns
+from app import views
 
 urlpatterns = [
-    path('plants/', PlantView.as_view())
+    path('plants/', views.PlantView.as_view())
 ]
+
+# urlpatterns = format_suffix_patterns(urlpatterns)

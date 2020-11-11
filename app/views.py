@@ -1,17 +1,16 @@
-from django.shortcuts import render
-from django.http import JsonResponse
-from django.views import View
+from django.shortcuts import get_object_or_404
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
 from .models import Plant, PlantImage, User, Schedule
+from .serializers import PlantSerializer
+
 
 # Create your views here.
+class PlantView(APIView):
 
-
-class PlantView(View):
     def get(self, request):
-        plants = Plant.objects.all().values('id', 'plant_image', 'scientific_name', 'nickname', 'location', 'acquired',
-                                            'special_instructions', 'user_id')  # only grab some attributes from our database, else we can't serialize it.
-        # convert our artists to a list instead of QuerySet
-        plants_list = list(plants)
-        # safe=False is needed if the first parameter is not a dictionary.
+        plants = Plant.objects.all()
+        serializer = PlantSerializer(plants, many=True)
 
-        return JsonResponse(plants_list, safe=False)
+        return Response(serializer.data)
