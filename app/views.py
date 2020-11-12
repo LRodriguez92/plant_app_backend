@@ -14,6 +14,16 @@ class PlantView(APIView):
 
         return Response(serializer.data)
 
+    def post(self, request):
+        serializer = PlantSerializer(data=request.data, )
+        if serializer.is_valid():
+            serializer.save()
+            # image_serializer = PlantImageSerializer(data={
+            #     plant:
+            # })
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class PlantDetailView(APIView):
     # add pk as an argument to retrieve the pk in the parameter.
