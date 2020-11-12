@@ -17,6 +17,7 @@ class ScheduleSerializer(serializers.ModelSerializer):
 
 
 class PlantSerializer(serializers.ModelSerializer):
+    id = serializers.ReadOnlyField()
 
     class Meta:
         model = Plant

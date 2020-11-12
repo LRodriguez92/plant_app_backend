@@ -16,12 +16,21 @@ class PlantView(APIView):
 
     def post(self, request):
         serializer = PlantSerializer(data=request.data)
+        print(request.data)
         if serializer.is_valid():
-            serializer.save()
-            # image_serializer = PlantImageSerializer(data={
-            #     plant:
-            # })
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            # save to variable in order to access the id of the newly created plant
+            saved_plant = serializer.save()
+
+            plant_image = {
+                'plant': saved_plant.id,
+                'image': saved_plant.plant_image
+            }
+            image_serializer = PlantImageSerializer(
+                data=plant_image)  # Save image to plant image table
+
+            if image_serializer.is_valid():
+                image_serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
