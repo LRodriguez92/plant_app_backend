@@ -25,8 +25,8 @@ class PlantDetailView(APIView):
 
 
 class PlantImageView(APIView):
-    def get(self, request):
-        plants = PlantImage.objects.all()
+    def get(self, request, pk):
+        plants = PlantImage.objects.filter(plant=pk)
         serializer = PlantImageSerializer(plants, many=True)
 
         return Response(serializer.data)
