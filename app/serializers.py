@@ -22,8 +22,8 @@ class PlantSerializer(serializers.ModelSerializer):
         model = Plant
         fields = '__all__'
 
-    schedules = ScheduleSerializer(
-        many=True,
+    schedule = ScheduleSerializer(
+        many=False,
         read_only=True
     )
 

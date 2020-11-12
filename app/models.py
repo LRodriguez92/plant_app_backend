@@ -26,8 +26,8 @@ class Plant(models.Model):
 
 
 class Schedule(models.Model):
-    plant = models.ForeignKey(
-        Plant, on_delete=models.CASCADE, related_name='schedules')
+    plant = models.OneToOneField(
+        Plant, on_delete=models.CASCADE, primary_key=True, related_name='schedule')
     water_date = models.DateField(null=True)
     water_time = models.TimeField(null=True)
     water_repeat = models.IntegerField(null=True)
