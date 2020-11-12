@@ -17,7 +17,7 @@ class PlantView(APIView):
     def post(self, request):
         serializer = PlantSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save()git
+            serializer.save()
             # image_serializer = PlantImageSerializer(data={
             #     plant:
             # })
