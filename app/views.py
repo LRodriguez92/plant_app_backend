@@ -36,7 +36,7 @@ class PlantImageView(APIView):
 class ScheduleView(APIView):
     # add pk as an argument to retrieve the pk in the parameter.
     def get(self, requrest, pk):
-        schedules = Schedule.objects.get(plant=pk)
-        serializer = ScheduleSerializer(schedules)
+        schedule = Schedule.objects.get(plant=pk)
+        serializer = ScheduleSerializer(schedule)
 
         return Response(serializer.data)
