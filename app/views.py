@@ -8,7 +8,6 @@ from .serializers import PlantSerializer, ScheduleSerializer, PlantImageSerializ
 
 # Create your views here.
 class PlantView(APIView):
-
     def get(self, request):
         plants = Plant.objects.all()
         serializer = PlantSerializer(plants, many=True)
@@ -16,8 +15,16 @@ class PlantView(APIView):
         return Response(serializer.data)
 
 
-class PlantImageView(APIView):
+class PlantDetailView(APIView):
+    # add pk as an argument to retrieve the pk in the parameter.
+    def get(self, request, pk):
+        plant = Plant.objects.get(id=pk)
+        serializer = PlantSerializer(plant)
 
+        return Response(serializer.data)
+
+
+class PlantImageView(APIView):
     def get(self, request):
         plants = PlantImage.objects.all()
         serializer = PlantImageSerializer(plants, many=True)
@@ -26,7 +33,6 @@ class PlantImageView(APIView):
 
 
 class ScheduleView(APIView):
-
     def get(self, requrest):
         schedules = Schedule.objects.all()
         serializer = ScheduleSerializer(schedules, many=True)
