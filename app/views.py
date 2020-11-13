@@ -19,7 +19,7 @@ class PlantView(APIView):
 
     def post(self, request):
         serializer = PlantSerializer(data=request.data)
-        print(request.data)
+
         if serializer.is_valid():
             # save to variable in order to access the id of the newly created plant
             saved_plant = serializer.save()
@@ -75,12 +75,26 @@ class PlantDetailView(APIView):
 
 
 class PlantImageView(APIView):
+    # Needs GET and POST
+
     # add pk as an argument to retrieve the pk in the parameter.
     def get(self, request, pk):
         plants = PlantImage.objects.filter(plant=pk)
         serializer = PlantImageSerializer(plants, many=True)
 
         return Response(serializer.data)
+
+    def post(self, request, pk):
+        request.data["plant"] = pk  # automatically add the plant id
+
+        serializer = PlantImageSerializer(
+            data=request.data)
+
+        if serializer.is_valid():
+            serializer.save()
+
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class ScheduleView(APIView):
