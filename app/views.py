@@ -160,3 +160,12 @@ class ScheduleView(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk):
+        try:
+            schedule = Schedule.objects.get(plant=pk)
+        except:
+            return Response({'message': 'The schedule does not exist'})
+
+        schedule.delete()
+        return Response({'message': 'Schedule was deleted successfully!'}, status=status.HTTP_204_NO_CONTENT)
