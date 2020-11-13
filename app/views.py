@@ -124,9 +124,23 @@ class PlantImageDetailView(APIView):
 
 
 class ScheduleView(APIView):
+    # Needs GET, POST, PUT and DELETE
+
     # add pk as an argument to retrieve the pk in the parameter.
     def get(self, requrest, pk):
         schedule = Schedule.objects.get(plant=pk)
         serializer = ScheduleSerializer(schedule)
 
         return Response(serializer.data)
+
+    def post(self, request, pk):
+        request.data["plant"] = pk  # automatically add the plant id
+
+        serializer = ScheduleSerializer(
+            data=request.data)
+
+        if serializer.is_valid():
+            serializer.save()
+
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
