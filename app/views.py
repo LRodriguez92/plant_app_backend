@@ -42,9 +42,12 @@ class PlantDetailView(APIView):
 
     # add pk as an argument to retrieve the pk in the parameter.
     def get(self, request, pk):
-        plant = Plant.objects.get(id=pk)
-        serializer = PlantSerializer(plant)
+        try:
+            plant = Plant.objects.get(id=pk)
+        except:
+            return Response({'message': 'The plant does not exist'})
 
+        serializer = PlantSerializer(plant)
         return Response(serializer.data)
 
     def put(self, request, pk):
@@ -60,6 +63,15 @@ class PlantDetailView(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk):
+        try:
+            plant = Plant.objects.get(id=pk)
+        except:
+            return Response({'message': 'The plant does not exist'})
+
+        plant.delete()
+        return Response({'message': 'Plant was deleted successfully!'}, status=status.HTTP_204_NO_CONTENT)
 
 
 class PlantImageView(APIView):
