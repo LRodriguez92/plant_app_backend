@@ -79,8 +79,12 @@ class PlantImageView(APIView):
 
     # add pk as an argument to retrieve the pk in the parameter.
     def get(self, request, pk):
-        plants = PlantImage.objects.filter(plant=pk)
-        serializer = PlantImageSerializer(plants, many=True)
+        try:
+            images = PlantImage.objects.filter(plant=pk)
+        except:
+            return Response({'message': 'The images do not not exist'})
+
+        serializer = PlantImageSerializer(images, many=True)
 
         return Response(serializer.data)
 
@@ -95,6 +99,19 @@ class PlantImageView(APIView):
 
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class PlantImageDetailView(APIView):
+    # Needs GET and DELETE
+
+    def get(self, request, pk, imagepk):
+        try:
+            image = PlantImage.objects.get(id=imagepk)
+        except:
+            return Response({'message': 'The image does not exist'})
+
+        serializer = PlantImageSerializer(image)
+        return Response(serializer.data)
 
 
 class ScheduleView(APIView):
