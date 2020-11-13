@@ -144,3 +144,19 @@ class ScheduleView(APIView):
 
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def put(self, request, pk):
+        try:
+            schedule = Schedule.objects.get(plant=pk)
+        except:
+            return Response({'message': 'The schedule does not exist'})
+
+        new_data = JSONParser().parse(request)
+        new_data["plant"] = pk  # automatically add plant id
+
+        serializer = ScheduleSerializer(schedule, data=new_data)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
