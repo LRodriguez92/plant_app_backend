@@ -113,6 +113,15 @@ class PlantImageDetailView(APIView):
         serializer = PlantImageSerializer(image)
         return Response(serializer.data)
 
+    def delete(self, request, pk, imagepk):
+        try:
+            image = PlantImage.objects.get(id=imagepk)
+        except:
+            return Response({'message': 'The image does not exist'})
+
+        image.delete()
+        return Response({'message': 'Image was deleted successfully!'}, status=status.HTTP_204_NO_CONTENT)
+
 
 class ScheduleView(APIView):
     # add pk as an argument to retrieve the pk in the parameter.
