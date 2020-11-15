@@ -187,3 +187,19 @@ class UserView(viewsets.ModelViewSet):
         elif self.action == 'list' or self.action == 'destroy':
             permission_classes = [IsAdminUser]
         return [permission() for permission in permission_classes]
+
+    def create(self, validated_data):
+        profile_data = validated_data.pop('profile')
+        password = validated_data.pop('password')
+        user = User(**validated_data)
+        user.set_password(password)
+        user.save()
+        UserProfile.objects.create(user=user, **profile_data)
+        return user
+
+    def update(self, instance, validated_data):
+        profile_data = validated_data.pop('profile')
+        profile = instance.profile
+
+        instance.email = validated_data.get('email', instance.email)
+        instance.save()

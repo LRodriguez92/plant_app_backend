@@ -16,6 +16,7 @@ urlpatterns = [
     path('plants/<int:pk>/schedule/', ScheduleView.as_view()),
     path('', include(router.urls)),
     path('auth/', include('rest_auth.urls')),
+    url('auth/registration/', include('rest_auth.registration.urls'))
 ]
 
 # urlpatterns = format_suffix_patterns(urlpatterns)
