@@ -1,10 +1,10 @@
 from django.shortcuts import get_object_or_404
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import status
+from rest_framework import status, viewsets
 from rest_framework.parsers import JSONParser
 from .models import Plant, PlantImage, User, Schedule
-from .serializers import PlantSerializer, ScheduleSerializer, PlantImageSerializer
+from .serializers import PlantSerializer, ScheduleSerializer, PlantImageSerializer, UserSerializer
 
 
 # Create your views here.
@@ -169,3 +169,8 @@ class ScheduleView(APIView):
 
         schedule.delete()
         return Response({'message': 'Schedule was deleted successfully!'}, status=status.HTTP_204_NO_CONTENT)
+
+
+class UserView(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer

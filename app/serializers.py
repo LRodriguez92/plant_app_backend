@@ -1,5 +1,9 @@
 from rest_framework import serializers
-from .models import User, Plant, PlantImage, Schedule
+from rest_framework.permissions import IsAuthenticated
+# from django.contrib.auth.models import User
+from django.contrib.auth import authenticate
+from django.contrib.auth.hashers import make_password
+from .models import Plant, PlantImage, Schedule, User, UserProfile
 
 
 class PlantImageSerializer(serializers.ModelSerializer):
@@ -32,3 +36,62 @@ class PlantSerializer(serializers.ModelSerializer):
         many=True,
         read_only=True
     )
+
+
+class UserProfileSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = UserProfile
+        fields = '__all__'
+
+
+class UserSerializer(serializers.HyperlinkedModelSerializer):
+    profile = UserProfileSerializer(required=True)
+
+    class Meta:
+        model = User
+        fields = ('url', 'email', 'first_name',
+                  'last_name', 'password', 'profile')
+        extra_kwargs = {'password': {'write_only': True}}
+
+    def create(self, validated_data):
+        profile_data = validated_data.pop('profile')
+        password = validated_data.pop('password')
+        user = User(**validated_data)
+        user.set_password(password)
+        user.save()
+        UserProfile.objects.create(user=user, **profile_data)
+        return user
+
+    def update(self, instance, validated_data):
+        profile_data = validated_data.pop('profile')
+        profile = instance.profile
+
+        instance.email = validated_data.get('email', instance.email)
+        instance.save()
+
+        profile.photo = profile_data.get('photo', profile.photo)
+        profile.save()
+
+        return instance
+
+# Register serializer
+# class RegisterSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = User
+#         fields = ('id', 'username', 'password', 'first_name', 'last_name')
+#         extra_kwargs = {
+#             'password': {'write_only': True},
+#         }
+
+#     def create(self, validated_data):
+#         user = User.objects.create_user(validated_data['username'],     password=validated_data['password'],
+#                                         first_name=validated_data['first_name'],  last_name=validated_data['last_name'])
+#         return user
+
+
+# User serializer
+# class UserSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = User
+#         fields = '__all__'
