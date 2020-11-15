@@ -23,7 +23,7 @@ class User(AbstractUser):
 class UserProfile(models.Model):
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='profile')
-    photo = models.ImageField(upload_to='uploads', blank=True)
+    photo = models.TextField()
 
 
 class Plant(models.Model):

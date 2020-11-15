@@ -6,7 +6,7 @@ from rest_framework.parsers import JSONParser
 from rest_framework.permissions import AllowAny
 
 from .permissions import IsLoggedInUserOrAdmin, IsAdminUser
-from .models import Plant, PlantImage, User, Schedule
+from .models import Plant, PlantImage, User, UserProfile, Schedule
 from .serializers import PlantSerializer, ScheduleSerializer, PlantImageSerializer, UserSerializer
 
 
@@ -180,7 +180,7 @@ class UserView(viewsets.ModelViewSet):
 
     def get_permissions(self):
         permission_classes = []
-        if self.action == 'create':
+        if self.action == 'post':
             permission_classes = [AllowAny]
         elif self.action == 'retrieve' or self.action == 'update' or self.action == 'partial_update':
             permission_classes = [IsLoggedInUserOrAdmin]
@@ -189,17 +189,26 @@ class UserView(viewsets.ModelViewSet):
         return [permission() for permission in permission_classes]
 
     def create(self, validated_data):
-        profile_data = validated_data.pop('profile')
-        password = validated_data.pop('password')
-        user = User(**validated_data)
+        print('CREATING!!!!!!!!')
+        print(validated_data.data)
+        profile_data = validated_data.data.pop('profile')
+        print("PROFILE DATA!!!!!")
+        print(profile_data)
+        password = validated_data.data.pop('password')
+        user = User(**validated_data.data)
         user.set_password(password)
         user.save()
-        UserProfile.objects.create(user=user, **profile_data)
-        return user
+        UserProfile.objects.create(user=user, photo=profile_data['photo'])
+        return Response({'message': 'User created Successfully!'}, status=status.HTTP_201_CREATED)
 
-    def update(self, instance, validated_data):
-        profile_data = validated_data.pop('profile')
-        profile = instance.profile
+    # def update(self, instance, validated_data):
+    #     profile_data = validated_data.pop('profile')
+    #     profile = instance.profile
 
-        instance.email = validated_data.get('email', instance.email)
-        instance.save()
+    #     instance.email = validated_data.get('email', instance.email)
+    #     instance.save()
+
+    #     profile.photo = profile_data.get('photo', profile.photo)
+    #     profile.save()
+
+    #     return instance
