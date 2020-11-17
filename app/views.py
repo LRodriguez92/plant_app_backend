@@ -1,7 +1,7 @@
 from django.shortcuts import get_object_or_404
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import status, viewsets
+from rest_framework import status, viewsets, permissions
 from rest_framework.parsers import JSONParser
 from rest_framework.permissions import AllowAny
 
@@ -189,17 +189,17 @@ class UserView(viewsets.ModelViewSet):
         return [permission() for permission in permission_classes]
 
     def create(self, validated_data):
-        print('CREATING!!!!!!!!')
-        print(validated_data.data)
+        # print('CREATING!!!!!!!!')
+        # print(validated_data.data)
         profile_data = validated_data.data.pop('profile')
-        print("PROFILE DATA!!!!!")
-        print(profile_data)
+        # print("PROFILE DATA!!!!!")
+        # print(profile_data)
         password = validated_data.data.pop('password')
         user = User(**validated_data.data)
         user.set_password(password)
         user.save()
         UserProfile.objects.create(user=user, photo=profile_data['photo'])
-        return Response({'message': 'User created Successfully!'}, status=status.HTTP_201_CREATED)
+        return Response({'message': 'User created Successfully! Now perform Login to get your token'}, status=status.HTTP_201_CREATED)
 
     # def update(self, instance, validated_data):
     #     profile_data = validated_data.pop('profile')
