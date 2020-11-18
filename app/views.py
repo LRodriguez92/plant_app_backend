@@ -168,11 +168,11 @@ class ScheduleView(APIView):
     # add pk as an argument to retrieve the pk in the parameter.
     def get(self, request, pk):
         try:
-            # verifies images get retrieved only from plants owned by users
+            # verifies schedule get retrieved only from plants owned by users
             if Plant.objects.get(id=pk, user=request.user.id):
                 schedule = Schedule.objects.get(plant=pk)
         except:
-            return Response({'message': 'The image or plant does not exist'})
+            return Response({'message': 'The schedule or plant does not exist'})
 
         serializer = ScheduleSerializer(schedule)
 
@@ -180,6 +180,12 @@ class ScheduleView(APIView):
 
     def post(self, request, pk):
         request.data["plant"] = pk  # automatically add the plant id
+
+        try:
+            # verifies schedule get retrieved only from plants owned by users
+            plant = Plant.objects.get(id=pk, user=request.user.id)
+        except:
+            return Response({'message': 'The plant does not not exist'})
 
         serializer = ScheduleSerializer(
             data=request.data)
