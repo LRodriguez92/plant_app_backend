@@ -100,7 +100,7 @@ class PlantImageView(APIView):
     # add pk as an argument to retrieve the pk in the parameter.
     def get(self, request, pk):
         try:
-            # makes sure we only get images from plants owned by user
+            # verifies images get retrieved only from plants owned by users
             if Plant.objects.get(id=pk, user=request.user.id):
                 images = PlantImage.objects.filter(plant=pk)
         except:
@@ -112,6 +112,12 @@ class PlantImageView(APIView):
 
     def post(self, request, pk):
         request.data["plant"] = pk  # automatically add the plant id
+
+        try:
+            # verifies images get retrieved only from plants owned by users
+            Plant.objects.get(id=pk, user=request.user.id)
+        except:
+            return Response({'message': 'The plant does not not exist'})
 
         serializer = PlantImageSerializer(
             data=request.data)
