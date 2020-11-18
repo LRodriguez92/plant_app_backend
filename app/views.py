@@ -143,6 +143,24 @@ class PlantImageDetailView(APIView):
         serializer = PlantImageSerializer(image)
         return Response(serializer.data)
 
+    def put(self, request, pk, imagepk):
+        try:
+            if Plant.objects.get(id=pk, user=request.user.id):
+                image = PlantImage.objects.get(id=imagepk, plant=pk)
+        except:
+            return Response({'message': 'The image or plant does not exist'})
+
+        new_data = JSONParser().parse(request)
+
+        new_data["plant"] = pk  # add plant id after parsing
+
+        serializer = PlantImageSerializer(image, data=new_data)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
     def delete(self, request, pk, imagepk):
         try:
             image = PlantImage.objects.get(id=imagepk)
