@@ -12,15 +12,22 @@ from .serializers import PlantSerializer, ScheduleSerializer, PlantImageSerializ
 
 # Create your views here.
 class PlantView(APIView):
-    # Only needs POST
+    permission_classes = [
+        permissions.IsAuthenticated,
+    ]
+    # Needs GET and POST
 
     def get(self, request):
-        plants = Plant.objects.all()
+        user_id = request.user.id  # id of the current logged in user
+
+        plants = Plant.objects.filter(user_id=user_id)
         serializer = PlantSerializer(plants, many=True)
 
         return Response(serializer.data)
 
     def post(self, request):
+        # automatically add id of the user
+        request.data["user"] = request.user.id
         serializer = PlantSerializer(data=request.data)
 
         if serializer.is_valid():
