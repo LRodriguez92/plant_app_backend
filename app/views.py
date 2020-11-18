@@ -130,13 +130,15 @@ class PlantImageView(APIView):
 
 
 class PlantImageDetailView(APIView):
-    # Needs GET and DELETE
+    # Needs GET, PUT and DELETE
 
     def get(self, request, pk, imagepk):
         try:
-            image = PlantImage.objects.get(id=imagepk)
+            # verifies images get retrieved only from plants owned by users
+            if Plant.objects.get(id=pk, user=request.user.id):
+                image = PlantImage.objects.get(id=imagepk, plant=pk)
         except:
-            return Response({'message': 'The image does not exist'})
+            return Response({'message': 'The image or plant does not exist'})
 
         serializer = PlantImageSerializer(image)
         return Response(serializer.data)
