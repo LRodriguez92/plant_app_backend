@@ -202,7 +202,7 @@ class ScheduleView(APIView):
             if Plant.objects.get(id=pk, user=request.user.id):
                 schedule = Schedule.objects.get(plant=pk)
         except:
-            return Response({'message': 'The schedule does not exist'})
+            return Response({'message': 'The schedule or plant does not exist'})
 
         new_data = JSONParser().parse(request)
         new_data["plant"] = pk  # automatically add plant id
@@ -216,7 +216,9 @@ class ScheduleView(APIView):
 
     def delete(self, request, pk):
         try:
-            schedule = Schedule.objects.get(plant=pk)
+            # verifies schedule get retrieved only from plants owned by users
+            if Plant.objects.get(id=pk, user=request.user.id):
+                schedule = Schedule.objects.get(plant=pk)
         except:
             return Response({'message': 'The schedule does not exist'})
 
