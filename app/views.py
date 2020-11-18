@@ -12,9 +12,6 @@ from .serializers import PlantSerializer, ScheduleSerializer, PlantImageSerializ
 
 # Create your views here.
 class PlantView(APIView):
-    permission_classes = [
-        permissions.IsAuthenticated,
-    ]
     # Needs GET and POST
 
     def get(self, request):
@@ -48,10 +45,6 @@ class PlantView(APIView):
 
 
 class PlantDetailView(APIView):
-    permission_classes = [
-        permissions.IsAuthenticated,
-    ]
-
     # Needs GET, PUT and DELETE
 
     # add pk as an argument to retrieve the pk in the parameter.
@@ -92,9 +85,6 @@ class PlantDetailView(APIView):
 
 
 class PlantImageView(APIView):
-    permission_classes = [
-        permissions.IsAuthenticated,
-    ]
     # Needs GET and POST
 
     # add pk as an argument to retrieve the pk in the parameter.
@@ -176,8 +166,14 @@ class ScheduleView(APIView):
     # Needs GET, POST, PUT and DELETE
 
     # add pk as an argument to retrieve the pk in the parameter.
-    def get(self, requrest, pk):
-        schedule = Schedule.objects.get(plant=pk)
+    def get(self, request, pk):
+        try:
+            # verifies images get retrieved only from plants owned by users
+            if Plant.objects.get(id=pk, user=request.user.id):
+                schedule = Schedule.objects.get(plant=pk)
+        except:
+            return Response({'message': 'The image or plant does not exist'})
+
         serializer = ScheduleSerializer(schedule)
 
         return Response(serializer.data)
@@ -224,15 +220,15 @@ class UserView(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
-    def get_permissions(self):
-        permission_classes = []
-        if self.action == 'post':
-            permission_classes = [AllowAny]
-        elif self.action == 'retrieve' or self.action == 'update' or self.action == 'partial_update':
-            permission_classes = [IsLoggedInUserOrAdmin]
-        elif self.action == 'list' or self.action == 'destroy':
-            permission_classes = [IsAdminUser]
-        return [permission() for permission in permission_classes]
+    # def get_permissions(self):
+    #     permission_classes = []
+    #     if self.action == 'post':
+    #         permission_classes = [AllowAny]
+    #     elif self.action == 'retrieve' or self.action == 'update' or self.action == 'partial_update':
+    #         permission_classes = [IsLoggedInUserOrAdmin]
+    #     elif self.action == 'list' or self.action == 'destroy':
+    #         permission_classes = [IsAdminUser]
+    #     return [permission() for permission in permission_classes]
 
     def create(self, validated_data):
         # print('CREATING!!!!!!!!')

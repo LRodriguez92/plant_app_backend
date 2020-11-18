@@ -9,9 +9,9 @@ router.register(r'users', UserView)  # Use this route to create users
 
 urlpatterns = [
     path('plants/', PlantView.as_view()),
-    path('plants/<int:pk>', PlantDetailView.as_view()),
+    path('plants/<int:pk>/', PlantDetailView.as_view()),
     path('plants/<int:pk>/images/', PlantImageView.as_view()),
-    path('plants/<int:pk>/images/<int:imagepk>',
+    path('plants/<int:pk>/images/<int:imagepk>/',
          PlantImageDetailView.as_view()),
     path('plants/<int:pk>/schedule/', ScheduleView.as_view()),
     path('', include(router.urls)),
