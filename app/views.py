@@ -183,7 +183,7 @@ class ScheduleView(APIView):
 
         try:
             # verifies schedule get retrieved only from plants owned by users
-            plant = Plant.objects.get(id=pk, user=request.user.id)
+            Plant.objects.get(id=pk, user=request.user.id)
         except:
             return Response({'message': 'The plant does not not exist'})
 
@@ -198,7 +198,9 @@ class ScheduleView(APIView):
 
     def put(self, request, pk):
         try:
-            schedule = Schedule.objects.get(plant=pk)
+            # verifies schedule get retrieved only from plants owned by users
+            if Plant.objects.get(id=pk, user=request.user.id):
+                schedule = Schedule.objects.get(plant=pk)
         except:
             return Response({'message': 'The schedule does not exist'})
 
