@@ -163,9 +163,10 @@ class PlantImageDetailView(APIView):
 
     def delete(self, request, pk, imagepk):
         try:
-            image = PlantImage.objects.get(id=imagepk)
+            if Plant.objects.get(id=pk, user=request.user.id):
+                image = PlantImage.objects.get(id=imagepk, plant=pk)
         except:
-            return Response({'message': 'The image does not exist'})
+            return Response({'message': 'The image or plant does not exist'})
 
         image.delete()
         return Response({'message': 'Image was deleted successfully!'}, status=status.HTTP_204_NO_CONTENT)
