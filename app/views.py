@@ -92,6 +92,9 @@ class PlantDetailView(APIView):
 
 
 class PlantImageView(APIView):
+    permission_classes = [
+        permissions.IsAuthenticated,
+    ]
     # Needs GET and POST
 
     # add pk as an argument to retrieve the pk in the parameter.

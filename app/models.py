@@ -3,6 +3,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.utils.translation import ugettext_lazy as _
 from django.conf import settings
+import datetime
 
 # Create your models here.
 
@@ -69,3 +70,4 @@ class PlantImage(models.Model):
     plant = models.ForeignKey(
         Plant, on_delete=models.CASCADE, related_name='images')
     image = models.TextField()
+    date = models.DateField(default=datetime.date.today)
