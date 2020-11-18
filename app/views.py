@@ -100,7 +100,9 @@ class PlantImageView(APIView):
     # add pk as an argument to retrieve the pk in the parameter.
     def get(self, request, pk):
         try:
-            images = PlantImage.objects.filter(plant=pk)
+            # makes sure we only get images from plants owned by user
+            if Plant.objects.get(id=pk, user=request.user.id):
+                images = PlantImage.objects.filter(plant=pk)
         except:
             return Response({'message': 'The images do not not exist'})
 
