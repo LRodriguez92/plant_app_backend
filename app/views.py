@@ -20,7 +20,7 @@ class PlantView(APIView):
     def get(self, request):
         user_id = request.user.id  # id of the current logged in user
 
-        plants = Plant.objects.filter(user_id=user_id)
+        plants = Plant.objects.filter(user=user_id)
         serializer = PlantSerializer(plants, many=True)
 
         return Response(serializer.data)
@@ -48,12 +48,16 @@ class PlantView(APIView):
 
 
 class PlantDetailView(APIView):
+    permission_classes = [
+        permissions.IsAuthenticated,
+    ]
+
     # Needs GET, PUT and DELETE
 
     # add pk as an argument to retrieve the pk in the parameter.
     def get(self, request, pk):
         try:
-            plant = Plant.objects.get(id=pk)
+            plant = Plant.objects.get(id=pk, user=request.user.id)
         except:
             return Response({'message': 'The plant does not exist'})
 
@@ -62,11 +66,14 @@ class PlantDetailView(APIView):
 
     def put(self, request, pk):
         try:
-            plant = Plant.objects.get(id=pk)
+            plant = Plant.objects.get(id=pk, user=request.user.id)
         except:
             return Response({'message': 'The plant does not exist'})
 
         new_data = JSONParser().parse(request)
+
+        new_data["user"] = request.user.id  # add user id after parsing
+
         serializer = PlantSerializer(plant, data=new_data)
 
         if serializer.is_valid():
@@ -76,7 +83,7 @@ class PlantDetailView(APIView):
 
     def delete(self, request, pk):
         try:
-            plant = Plant.objects.get(id=pk)
+            plant = Plant.objects.get(id=pk, user=request.user.id)
         except:
             return Response({'message': 'The plant does not exist'})
 
