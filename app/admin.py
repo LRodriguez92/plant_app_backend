@@ -35,3 +35,4 @@ class UserAdmin(BaseUserAdmin):
 admin.site.register(Plant)
 admin.site.register(Schedule)
 admin.site.register(PlantImage)
+admin.site.register(UserProfile)
