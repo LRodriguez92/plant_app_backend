@@ -7,7 +7,7 @@ from rest_framework.permissions import AllowAny
 
 from .permissions import IsLoggedInUserOrAdmin, IsAdminUser
 from .models import Plant, PlantImage, User, UserProfile, Schedule
-from .serializers import PlantSerializer, ScheduleSerializer, PlantImageSerializer, UserSerializer
+from .serializers import PlantSerializer, ScheduleSerializer, PlantImageSerializer, UserSerializer, UserProfileSerializer
 
 
 # Create your views here.
@@ -230,15 +230,15 @@ class UserView(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
-    # def get_permissions(self):
-    #     permission_classes = []
-    #     if self.action == 'post':
-    #         permission_classes = [AllowAny]
-    #     elif self.action == 'retrieve' or self.action == 'update' or self.action == 'partial_update':
-    #         permission_classes = [IsLoggedInUserOrAdmin]
-    #     elif self.action == 'list' or self.action == 'destroy':
-    #         permission_classes = [IsAdminUser]
-    #     return [permission() for permission in permission_classes]
+    def get_permissions(self):
+        permission_classes = []
+        if self.action == 'post':
+            permission_classes = [AllowAny]
+        elif self.action == 'retrieve':
+            permission_classes = [IsLoggedInUserOrAdmin]
+        elif self.action == 'list' or self.action == 'destroy' or self.action == 'update' or self.action == 'partial_update':
+            permission_classes = [IsAdminUser]
+        return [permission() for permission in permission_classes]
 
     def create(self, validated_data):
         # print('CREATING!!!!!!!!')
@@ -253,14 +253,40 @@ class UserView(viewsets.ModelViewSet):
         UserProfile.objects.create(user=user, photo=profile_data['photo'])
         return Response({'message': 'User created Successfully! Now perform Login to get your token'}, status=status.HTTP_201_CREATED)
 
-    # def update(self, instance, validated_data):
-    #     profile_data = validated_data.pop('profile')
-    #     profile = instance.profile
 
-    #     instance.email = validated_data.get('email', instance.email)
-    #     instance.save()
+class UserProfileView(APIView):
 
-    #     profile.photo = profile_data.get('photo', profile.photo)
-    #     profile.save()
+    def post(self, request, pk):
+        request.data["user"] = pk  # automatically add the user id
 
-    #     return instance
+        try:
+            profile = UserProfile.objects.get(user=pk)
+        except:
+            return Response({'message': 'The user does not exist or you are not authorized to add to the profile'})
+
+        serializer = ScheduleSerializer(
+            data=request.data)
+
+        if serializer.is_valid():
+            serializer.save()
+
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+    def put(self, request, pk):
+        try:
+            profile = UserProfile.objects.get(user=pk)
+        except:
+            return Response({'message': 'The profile does not exist or you are not authorized to edit this profile'})
+
+        new_data = JSONParser().parse(request)
+        new_data["user"] = pk  # automatically add user id
+
+        serializer = UserProfileSerializer(profile, data=new_data)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
