@@ -81,6 +81,11 @@ REST_FRAMEWORK = {
 
 REST_USE_JWT = True
 
+JWT_AUTH = {
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(hours=1),
+    'JWT_ALLOW_REFRESH': True,
+}
+
 AUTH_USER_MODEL = 'app.User'
 # Application definition
 
