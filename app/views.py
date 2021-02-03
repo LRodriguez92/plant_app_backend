@@ -4,6 +4,8 @@ from rest_framework.response import Response
 from rest_framework import status, viewsets, permissions
 from rest_framework.parsers import JSONParser
 from rest_framework.permissions import AllowAny
+import json
+import requests
 
 from .permissions import IsLoggedInUserOrAdmin, IsAdminUser
 from .models import Plant, PlantImage, User, UserProfile, Schedule
@@ -11,6 +13,16 @@ from .serializers import PlantSerializer, ScheduleSerializer, PlantImageSerializ
 
 
 # Create your views here.
+
+class TrefleView(APIView):
+
+    def get(self, request, name):
+        response = requests.get(
+            'http://trefle.io/api/v1/plants/search?q={}&token=_Y7bNYzpjmas1DOiYzl9BTB5nsUs6XX8p_ka94d1RcQ'.format(name))
+        print(response.json())
+        return Response(response.json())
+
+
 class PlantView(APIView):
     # Needs GET and POST
 
@@ -273,7 +285,6 @@ class UserProfileView(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
     def put(self, request, pk):
         try:
             profile = UserProfile.objects.get(user=pk)
@@ -289,4 +300,3 @@ class UserProfileView(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-

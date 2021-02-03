@@ -1,7 +1,7 @@
 from django.urls import path
 from django.conf.urls import url, include
 from rest_framework import routers
-from .views import PlantView, PlantDetailView, ScheduleView, PlantImageView, PlantImageDetailView, UserView, UserProfileView
+from .views import PlantView, PlantDetailView, ScheduleView, PlantImageView, PlantImageDetailView, UserView, UserProfileView, TrefleView
 
 router = routers.DefaultRouter()
 router.register(r'users', UserView)  # Use this route to create users
@@ -17,5 +17,5 @@ urlpatterns = [
     path('plants/<int:pk>/images/<int:imagepk>/',
          PlantImageDetailView.as_view()),
     path('plants/<int:pk>/schedule/', ScheduleView.as_view()),
+    path('trefle/plants/<str:name>', TrefleView.as_view())
 ]
-
